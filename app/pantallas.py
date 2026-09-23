@@ -50,7 +50,7 @@ def _grafico_barras(clases: pd.Series) -> None:
 # Se muestran como "nombre llano (nombre técnico)".
 GLOSARIO = {
     "Flow Duration": "Duración de la conversación",
-    "Destination Port": "Puerta (puerto) del servicio contactado",
+    "Destination Port": "Puerto del servicio contactado",
     "Bwd Packet Length Min": "Tamaño mínimo de los paquetes de respuesta",
     "Bwd Packet Length Mean": "Tamaño promedio de los paquetes de respuesta",
     "Bwd Packet Length Max": "Tamaño máximo de los paquetes de respuesta",
@@ -624,21 +624,21 @@ def pantalla_interpretabilidad(recursos, estado) -> None:
         "característica (medido en macro-F1, el puntaje que promedia qué tan "
         "bien se detecta cada clase). En general, para separar un ataque del "
         "tráfico normal lo que más pesa es la **duración** de la conversación, "
-        "la **puerta contactada**, el **tamaño de los paquetes de respuesta** "
+        "el **puerto contactado**, el **tamaño de los paquetes de respuesta** "
         "y el **ritmo**, es decir, el comportamiento del tráfico."
     )
 
     st.markdown(
-        "**Prueba de la puerta (puerto de destino):** "
-        "La segunda característica más influyente es la puerta del servicio "
+        "**Prueba del puerto de destino:** "
+        "La segunda característica más influyente es el puerto del servicio "
         "contactado, y eso nos generó una duda metodológica, porque en el "
-        "dataset cada ataque usa siempre su puerta típica (el ataque web la "
-        "80, el de acceso remoto la 22), algo que en el mundo real nadie "
+        "dataset cada ataque usa siempre su puerto típico (el ataque web el "
+        "80, el de acceso remoto el 22), algo que en el mundo real nadie "
         "garantiza. Para saber si el modelo detecta comportamiento o si "
-        "simplemente memorizó puertas, lo reentrenamos **sin** esa "
+        "simplemente memorizó puertos, lo reentrenamos **sin** esa "
         "característica y el desempeño pasó de 0,970 a 0,950 en validación y "
         "de 0,967 a 0,942 en el test. Es una caída pequeña, lo que indica que "
-        "el modelo sí aprende **comportamiento** y que la puerta solo le ayuda "
+        "el modelo sí aprende **comportamiento** y que el puerto solo le ayuda "
         "a descartar falsas alarmas en las clases más difíciles."
     )
 

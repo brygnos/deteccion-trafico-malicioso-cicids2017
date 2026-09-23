@@ -1,6 +1,6 @@
 # Proyecto Final MIAD: detección de tráfico de red malicioso
 
-El tablero está publicado en [[PENDIENTE: URL]].
+El tablero está publicado en https://deteccion-trafico-malicioso.streamlit.app/.
 
 Este repositorio tiene un **tablero web** que clasifica el tráfico de red (normal o
 alguno de los tipos de ataque) usando el dataset **CIC-IDS2017**. Detrás del
@@ -13,7 +13,7 @@ Aquí encontrarás qué abrir según lo que busques:
 
 | Si buscas | Abre |
 |---|---|
-| Usar el tablero | La URL pública ([[PENDIENTE: URL]]) y sus dos demos integradas, ver [Probar el tablero con las demos](#probar-el-tablero-con-las-demos). Para abrirlo en tu equipo, sigue [Correr el tablero paso a paso](#correr-el-tablero-paso-a-paso). |
+| Usar el tablero | La URL pública (https://deteccion-trafico-malicioso.streamlit.app/) y sus dos demos integradas, ver [Probar el tablero con las demos](#probar-el-tablero-con-las-demos). Para abrirlo en tu equipo, sigue [Correr el tablero paso a paso](#correr-el-tablero-paso-a-paso). |
 | Cómo se usa | [docs/manual_usuario.md](docs/manual_usuario.md), el manual de usuario, con las ventajas, limitaciones y advertencias del tablero y sus casos de uso paso a paso. |
 | El detalle técnico | [reports/reporte_tecnico_final.pdf](reports/reporte_tecnico_final.pdf), el reporte técnico de experimentos. Los resultados sobre el conjunto de prueba están en la sección 7.1, el estado de implementación en la 8 y las conclusiones en la 9, y los apéndices tienen la evidencia de colinealidad y la configuración de parámetros. |
 | Qué se cumplió | [docs/tabla_requerimientos_diligenciada.xlsx](docs/tabla_requerimientos_diligenciada.xlsx), la tabla de los 22 requerimientos con el resultado, el estado y la evidencia de cada uno. |
@@ -47,7 +47,7 @@ que muestra el tablero, así que basta con buscar el mismo número.
 
 **Paso a paso:**
 
-1. Abre el tablero, con la URL pública cuando esté desplegado o en tu equipo
+1. Abre el tablero, con la URL pública o en tu equipo
    siguiendo [Correr el tablero paso a paso](#correr-el-tablero-paso-a-paso).
 2. En la barra lateral, debajo del cargador de archivos, busca "¿Sin archivo a
    la mano? Prueba con una demostración:" y haz clic en **Demo rica en ataques**
@@ -130,6 +130,23 @@ archivos queda en la misma versión.
 >
 > **Despliegue:** hay que elegir **Python 3.13** en los ajustes avanzados del
 > hosting, que es la misma versión con la que se congeló el entorno.
+
+## Licencias de las dependencias
+
+Estas son las dependencias directas del tablero (las de `requirements.in`), con
+la licencia que declara cada paquete instalado. Las dependencias indirectas
+quedan fijadas en `requirements.txt`. Todas son licencias de código abierto
+permisivas, compatibles con el uso académico del proyecto.
+
+| Paquete | Versión | Para qué se usa | Licencia |
+|---|---|---|---|
+| streamlit | 1.63.0 | El tablero web | Apache-2.0 |
+| scikit-learn | 1.9.0 | Los tres modelos | BSD-3-Clause |
+| pandas | 2.3.3 | Lectura y manejo de tablas | BSD 3-Clause |
+| numpy | 2.5.1 | Cálculo numérico | `BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0` (el paquete incluye componentes con cada una) |
+| joblib | 1.5.3 | Guardar y cargar los modelos | BSD-3-Clause |
+| shap | 0.52.0 | La explicación de cada alerta | MIT |
+| pytest | 9.1.1 | Las pruebas de los requerimientos | MIT |
 
 ## Correr el tablero paso a paso
 
