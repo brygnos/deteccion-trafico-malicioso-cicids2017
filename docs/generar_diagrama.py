@@ -191,15 +191,26 @@ def main() -> None:
               "Excluye las filas con\nvalores faltantes, infinitos\no texto, y dice cuáles son\n\n"
               f"Deriva {N_DERIVADAS} indicadores y deja\nlas {N_VARIABLES} variables listas", "proceso")
 
-    # Los tres modelos en paralelo
+    # Los tres modelos en paralelo, dentro de un marco que los agrupa
     xm, wm, hm = 53.0, 14.6, 5.1
+    marco = (xm - 1.1, 4.4, wm + 2.2, 20.8)  # x, y, ancho, alto
+    ax.add_patch(FancyBboxPatch(
+        marco[:2], marco[2], marco[3], boxstyle="round,pad=0,rounding_size=1.0",
+        linewidth=1.4, edgecolor=COLORES["modelo"][1], facecolor="none",
+        linestyle="--", zorder=1.5,
+    ))
+    ax.text(marco[0] + marco[2] / 2, marco[1] + marco[3] - 0.5, "Los tres modelos, en paralelo",
+            ha="center", va="top", fontsize=8.5, color=GRIS, style="italic", zorder=3)
     m1 = caja(ax, xm, 17.4, wm, hm, "Clasificador multiclase", "Tipo de ataque y confianza", "modelo")
     m2 = caja(ax, xm, 11.35, wm, hm, "Clasificador binario", "Ataque o no ataque", "modelo")
     m3 = caja(ax, xm, 5.3, wm, hm, "Detector de anomalías", "Marca de anomalía", "modelo")
 
+    # Misma definición del manual: todos los flujos salen clasificados y las
+    # alertas son los que tienen un tipo de ataque asignado por el multiclase
     b5 = caja(ax, 71.6, yb, 12.4, hb, "Alertas priorizadas",
-              "Cada flujo con su tipo,\nconfianza, veredicto\nbinario y marca de\nanomalía\n\n"
-              "Cada alerta explicada\ncon las 8 variables\nque más pesaron", "salida")
+              "Todos los flujos salen\ncon su tipo, confianza,\nveredicto binario y\nmarca de anomalía\n\n"
+              "Las alertas son los que\ntienen un tipo de ataque\nasignado por el multiclase,\n"
+              "cada una explicada con\nlas 8 variables que\nmás pesaron", "salida")
     b6 = caja(ax, 86.6, yb, 12.0, hb, "Analista",
               "Filtra por tipo de\nataque, confianza y\nmarca de anomalía\n\n"
               "Exporta en CSV y\ndecide qué investigar", "persona")
@@ -211,9 +222,10 @@ def main() -> None:
         flecha(ax, derecha(m), izquierda(b5))
     flecha(ax, derecha(b5), izquierda(b6))
 
-    # Los modelos guardados se cargan en el tablero
+    # Los modelos guardados se cargan en el tablero: la flecha llega al marco
+    # que agrupa los tres modelos, no a uno solo
     x6, y6, w6, h6 = a6
-    flecha(ax, (x6 + w6 / 2, y6 - 0.4), (xm + wm / 2 + 3.0, 17.4 + hm + 0.4),
+    flecha(ax, (x6 + w6 / 2, y6 - 0.4), (marco[0] + marco[2] / 2, marco[1] + marco[3] + 0.2),
            texto="los tres modelos se cargan al abrir el tablero", curva=-0.18,
            desplazamiento=(-9.0, -0.4))
 

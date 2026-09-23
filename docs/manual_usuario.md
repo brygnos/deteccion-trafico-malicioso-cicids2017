@@ -12,7 +12,7 @@ que no exigen descargar ni subir nada.
 |---|---|
 | URL pública del tablero | [[PENDIENTE: URL]] |
 | Navegadores | Chrome, Firefox o Edge de escritorio |
-| Lectura estimada | Unos 15 minutos |
+| Lectura estimada | Unos 25 minutos |
 | Anexos | Diagrama esquemático, reporte técnico, tabla de requerimientos diligenciada, código y pruebas (ver [Anexos](#anexos)) |
 
 **Contenido**
@@ -88,7 +88,8 @@ con los demás tipos del dataset.
 
 | Ventaja | Efecto en el trabajo del SOC | Cómo lo logra |
 |---|---|---|
-| Reduce la carga de revisión | **Carga de revisión.** El analista revisa una fracción priorizada del lote en lugar de revisarlo todo. En la demo de proporción realista, el Panel de resumen pasa de 500 flujos por revisar a 23 alertas priorizadas, es decir, 95,4% menos revisión. | **Fatiga de alertas.** El modelo mantiene las falsas alarmas (flujos normales marcados como ataque) en 0,12% del tráfico normal y alcanza un macro-F1 de 0,975 sobre 499.616 flujos de prueba que nunca vio al entrenar. El macro-F1 promedia qué tan bien se detecta cada clase, pesando igual a la más común y a la más rara; como comparación, un modelo que dijera "todo es normal" apenas llega a 0,082. |
+| Reduce la carga de revisión | **Carga de revisión.** El analista revisa una fracción priorizada del lote en lugar de revisarlo todo. En la demo de proporción realista, el Panel de resumen pasa de 500 flujos por revisar a 23 alertas priorizadas, es decir, 95,4% menos revisión. | Solo se convierten en alerta los flujos a los que el clasificador multiclase asigna un tipo de ataque, y la pantalla Alertas permite filtrarlas por tipo de ataque, confianza mínima y marca de anomalía para decidir qué revisar primero. |
+| Pocas falsas alarmas | **Fatiga de alertas.** El tráfico normal casi nunca se convierte en alerta, así que el tiempo del analista no se va en revisar falsas alarmas. | El modelo marca como ataque solo 0,12% del tráfico normal (esas son las falsas alarmas) y alcanza un macro-F1 de 0,975 sobre 499.616 flujos de prueba que nunca vio al entrenar. El macro-F1 promedia qué tan bien se detecta cada clase, pesando igual a la más común y a la más rara; como comparación, un modelo que dijera "todo es normal" apenas llega a 0,082. |
 | Explica cada alerta | **Auditabilidad.** Cada alerta viene con una razón concreta que se puede revisar y explicar a otras personas. | SHAP, una técnica que reparte la "responsabilidad" de la decisión entre las variables del flujo, muestra las 8 que más pesaron en esa alerta y el valor que tenían. |
 | Detecta sin etiquetas ataques no vistos | **Cobertura de amenazas.** Atrapa comportamientos raros que el clasificador no conoce. | Evaluado sobre el resto de la semana con un presupuesto de 1% de falsas alarmas, el detector encontró 89% de los flujos de Heartbleed (8 de 9), 52% de los de DoS slowloris y 48% de los de Infiltration (14 de 29) sin haber visto nunca un ataque. |
 | No accede al contenido del tráfico | **Privacidad.** Se puede usar sin exponer las comunicaciones de la organización. | Usa solo medidas de comportamiento (tamaños, tiempos, conteos), sin direcciones IP ni contenido. El archivo se procesa en memoria y no se guarda. |
@@ -223,39 +224,20 @@ ofrece 0,5%, 1% (el valor inicial) y 2%. Un valor más bajo es más estricto
 
 ### 2.4 Instalación local (opcional)
 
-Solo hace falta si quieres correr el tablero en tu propio equipo. El
-[README](../README.md) trae el procedimiento completo y una tabla de problemas
-frecuentes; aquí está el resumen.
-
-Hay dos archivos de dependencias y se instala uno según el objetivo:
+Solo hace falta si quieres correr el tablero en tu propio equipo. Hay dos
+archivos de dependencias y se instala uno según el objetivo:
 `requirements.txt` si solo quieres usar el tablero o correr las pruebas, y
 `requirements-analisis.txt` si quieres reproducir el análisis (notebooks y
 `src/`), que además incluye todo lo del tablero.
 
-1. Instala Python 3.13 y abre una terminal (PowerShell en Windows, Terminal en
-   Mac y Linux) en la carpeta del proyecto, la que contiene `streamlit_app.py`.
-2. Crea el entorno del tablero (solo la primera vez). En Windows:
+1. Crea un entorno con Python 3.13 e instala en él el archivo que corresponda.
+2. Desde la carpeta del proyecto, lanza el tablero con `streamlit run streamlit_app.py` y abre la dirección que muestra la terminal (normalmente `http://localhost:8501`).
+3. Para detenerlo, pulsa `Ctrl + C` en la terminal.
 
-   ```powershell
-   python -m venv .venv-app
-   .venv-app\Scripts\python.exe -m pip install -r requirements.txt
-   ```
-
-   En Mac y Linux:
-
-   ```bash
-   python3 -m venv .venv-app
-   .venv-app/bin/python -m pip install -r requirements.txt
-   ```
-
-3. Lanza el tablero con `.venv-app\Scripts\streamlit.exe run streamlit_app.py`
-   en Windows o con `.venv-app/bin/streamlit run streamlit_app.py` en Mac y
-   Linux.
-4. Abre la dirección que aparece en la terminal, normalmente
-   `http://localhost:8501`. La terminal tiene que quedar abierta mientras uses
-   el tablero.
-5. Para detenerlo, pulsa `Ctrl + C` en la terminal. Cerrar la pestaña del
-   navegador no lo detiene.
+El procedimiento completo, con los comandos para Windows, Mac y Linux y una
+tabla de problemas frecuentes, está en
+[Correr el tablero paso a paso](../README.md#correr-el-tablero-paso-a-paso),
+en el README.
 
 **Nota:** en un Mac con procesador Intel no se puede instalar ninguno de los
 dos entornos, porque SHAP depende de `numba` y `numba` ya no publica versiones
@@ -265,7 +247,7 @@ para esa plataforma con Python 3.13. En ese caso usa la URL pública.
 file or directory` y una ruta muy larga, el motivo es que Windows limita las
 rutas a 260 caracteres. Mueve la carpeta del proyecto a una ruta corta (por
 ejemplo, una carpeta `proyectos` en la raíz del disco), borra la carpeta
-`.venv-app` y repite el paso 2.
+`.venv-app` y vuelve a crear el entorno.
 
 ### 2.5 Actualización de los modelos
 
@@ -512,8 +494,8 @@ no hace falta para usar el tablero.
    `python -m pytest -v` desde la raíz del proyecto con el Python de
    `.venv-app`. Sin los datos grandes, el resultado esperado es 17 pruebas
    pasadas y 8 omitidas: 6 son verificaciones manuales que dependen del
-   despliegue o de una persona, y 2 necesitan los datos procesados. Cada
-   omisión explica su razón en la salida.
+   despliegue o de una persona, y 2 necesitan datos que el pipeline genera a
+   partir del dataset. Cada omisión explica su razón en la salida.
 2. Instala el entorno del análisis con `requirements-analisis.txt` (sección
    2.4).
 3. Descarga los 8 CSV de CIC-IDS2017 y ponlos en `data/raw/`.
