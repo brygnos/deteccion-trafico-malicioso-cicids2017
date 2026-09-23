@@ -1,0 +1,14 @@
+bloque,representante_conservada,eliminadas,n_eliminadas,r_abs_min_en_bloque,r_abs_max_en_bloque,razon
+1,Total Fwd Packets,Total Backward Packets; Subflow Fwd Packets; Subflow Bwd Packets; Subflow Bwd Bytes; Total Length of Bwd Packets; act_data_pkt_fwd,6,0.965,1.0,Todas cuentan volumen de la conversación y se mueven juntas; 'paquetes enviados por el origen' es el conteo más directo. Las 'Subflow *' son alias exactos de los totales.
+2,Flow IAT Max,Fwd IAT Max; Idle Max; Idle Mean; Idle Min,4,0.9502,0.9981,Todas capturan el mayor silencio dentro de la conversación; 'Flow IAT Max' es la versión global.
+3,Bwd Packet Length Mean,Avg Bwd Segment Size; Bwd Packet Length Max; Bwd Packet Length Std,3,0.9409,1.0,"Tamaño de los paquetes de respuesta; 'Avg Bwd Segment Size' es un alias exacto de la media, y máximo/desviación van casi pegados a ella."
+4,Total Length of Fwd Packets,Subflow Fwd Bytes,1,1.0,1.0,Alias exacto (r=1.000); se conserva el nombre directo: bytes enviados por el origen.
+5,Fwd Packet Length Mean,Avg Fwd Segment Size,1,1.0,1.0,Alias exacto (r=1.000) del tamaño medio de paquete de ida.
+6,Fwd URG Flags,CWE Flag Count,1,1.0,1.0,"Idénticas en los datos (r=1.000); se conserva la bandera TCP estándar (URG), mejor documentada que el conteo 'CWE'."
+7,SYN Flag Count,Fwd PSH Flags,1,1.0,1.0,Idénticas en los datos (r=1.000); SYN (inicio de conexión) es clave para explicar escaneos de puertos.
+8,RST Flag Count,ECE Flag Count,1,1.0,1.0,Idénticas en los datos (r=1.000); RST (conexión rechazada/cortada) es la más interpretable.
+9,Flow Duration,Fwd IAT Total,1,0.9986,0.9986,r=0.999; la duración de la conversación es la feature más fácil de explicar del dataset.
+10,Packet Length Mean,Average Packet Size,1,0.9978,0.9978,r=0.998; son dos fórmulas casi iguales del tamaño medio de paquete.
+11,Max Packet Length,Packet Length Std,1,0.9841,0.9841,r=0.984; el máximo es más directo de explicar que la desviación.
+12,Flow Packets/s,Fwd Packets/s,1,0.9833,0.9833,r=0.983; se conserva el ritmo global de la conversación.
+13,Fwd Packet Length Max,Fwd Packet Length Std,1,0.9692,0.9692,r=0.969; mismo criterio: máximo antes que desviación.

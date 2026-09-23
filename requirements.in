@@ -1,0 +1,26 @@
+# Dependencias DIRECTAS del tablero (la app Streamlit) y de sus pruebas. De
+# aquí se genera requirements.txt, que fija también todas las dependencias
+# indirectas. Para regenerarlo, desde la raíz del proyecto:
+#
+#   uv pip compile requirements.in --python-version 3.13 --python-platform x86_64-unknown-linux-gnu -c requirements-analisis.txt -o requirements.txt
+#
+# Se resuelve para Linux, que es la plataforma del hosting. No se usa
+# --universal porque con él uv tiene que encontrar una sola versión de numba
+# para todas las plataformas, incluida Mac con procesador Intel, donde SHAP
+# 0.52 exige una numba incompatible con numpy 2.5.1; el resultado sería una
+# numba que no se instala en Python 3.13.
+#
+# El -c obliga a que todo paquete que también esté en requirements-analisis.txt
+# quede en la MISMA versión del entorno donde se entrenaron los modelos. En
+# particular scikit-learn debe ser 1.9.0 en los dos archivos: de esa versión
+# depende que los modelos de models/ carguen. Desplegar con Python 3.13.
+
+streamlit==1.63.0
+scikit-learn==1.9.0
+pandas==2.3.3
+numpy==2.5.1
+joblib==1.5.3
+shap==0.52.0
+
+# Pruebas de requerimientos (python -m pytest desde la raíz)
+pytest==9.1.1

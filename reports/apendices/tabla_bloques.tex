@@ -1,0 +1,28 @@
+% Generado por reports/apendices/generar_apendices.py a partir de
+% GRUPOS_CORRELACIONADOS (src/features.py). No editar a mano.
+\begin{longtable}{C{0.6cm} L{3.0cm} L{4.2cm} L{6.3cm}}
+\caption{Los 13 bloques de variables redundantes ($|r| > 0{,}95$ sobre 500.000 flujos del conjunto de entrenamiento, semilla 42). Texto tomado literalmente de \texttt{GRUPOS\_CORRELACIONADOS} en \texttt{src/features.py}.}\label{tab:bloques}\\
+\toprule
+\textbf{\#} & \textbf{Representante conservada} & \textbf{Variables eliminadas} & \textbf{Razón de la elección} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{\#} & \textbf{Representante conservada} & \textbf{Variables eliminadas} & \textbf{Razón de la elección} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1 & \texttt{Total Fwd Packets} & \texttt{Total Backward Packets}, \texttt{Subflow Fwd Packets}, \texttt{Subflow Bwd Packets}, \texttt{Subflow Bwd Bytes}, \texttt{Total Length of Bwd Packets}, \texttt{act\_data\_pkt\_fwd} & Todas cuentan volumen de la conversación y se mueven juntas; 'paquetes enviados por el origen' es el conteo más directo. Las 'Subflow *' son alias exactos de los totales. \\
+2 & \texttt{Flow IAT Max} & \texttt{Fwd IAT Max}, \texttt{Idle Max}, \texttt{Idle Mean}, \texttt{Idle Min} & Todas capturan el mayor silencio dentro de la conversación; 'Flow IAT Max' es la versión global. \\
+3 & \texttt{Bwd Packet Length Mean} & \texttt{Avg Bwd Segment Size}, \texttt{Bwd Packet Length Max}, \texttt{Bwd Packet Length Std} & Tamaño de los paquetes de respuesta; 'Avg Bwd Segment Size' es un alias exacto de la media, y máximo/desviación van casi pegados a ella. \\
+4 & \texttt{Total Length of Fwd Packets} & \texttt{Subflow Fwd Bytes} & Alias exacto (r=1.000); se conserva el nombre directo: bytes enviados por el origen. \\
+5 & \texttt{Fwd Packet Length Mean} & \texttt{Avg Fwd Segment Size} & Alias exacto (r=1.000) del tamaño medio de paquete de ida. \\
+6 & \texttt{Fwd URG Flags} & \texttt{CWE Flag Count} & Idénticas en los datos (r=1.000); se conserva la bandera TCP estándar (URG), mejor documentada que el conteo 'CWE'. \\
+7 & \texttt{SYN Flag Count} & \texttt{Fwd PSH Flags} & Idénticas en los datos (r=1.000); SYN (inicio de conexión) es clave para explicar escaneos de puertos. \\
+8 & \texttt{RST Flag Count} & \texttt{ECE Flag Count} & Idénticas en los datos (r=1.000); RST (conexión rechazada/cortada) es la más interpretable. \\
+9 & \texttt{Flow Duration} & \texttt{Fwd IAT Total} & r=0.999; la duración de la conversación es la feature más fácil de explicar del dataset. \\
+10 & \texttt{Packet Length Mean} & \texttt{Average Packet Size} & r=0.998; son dos fórmulas casi iguales del tamaño medio de paquete. \\
+11 & \texttt{Max Packet Length} & \texttt{Packet Length Std} & r=0.984; el máximo es más directo de explicar que la desviación. \\
+12 & \texttt{Flow Packets/s} & \texttt{Fwd Packets/s} & r=0.983; se conserva el ritmo global de la conversación. \\
+13 & \texttt{Fwd Packet Length Max} & \texttt{Fwd Packet Length Std} & r=0.969; mismo criterio: máximo antes que desviación. \\
+\end{longtable}

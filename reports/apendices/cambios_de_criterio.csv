@@ -1,0 +1,10 @@
+contexto,modelo,clase,parametro,valor,valor_por_defecto,escrito_en_codigo,coincide_con_default,origen,criterio_anterior,archivos_fuente
+src/experimentos.py::construir_pipeline,Matriz Fase 3: reglog + sin_correccion (paso 'modelo'),LogisticRegression,class_weight,None,None,True,True,explícito,por defecto,src/experimentos.py; src/interpretabilidad.py
+src/experimentos.py::construir_pipeline,Matriz Fase 3: arboles + sin_correccion (paso 'modelo'),HistGradientBoostingClassifier,class_weight,None,None,True,True,explícito,por defecto,src/modelo_final.py; src/experimentos.py; src/interpretabilidad.py; src/evaluacion_final.py
+src/experimentos.py::construir_pipeline,Matriz Fase 3: reglog + smote (paso 'modelo'),LogisticRegression,class_weight,None,None,True,True,explícito,por defecto,src/experimentos.py; src/interpretabilidad.py
+src/experimentos.py::construir_pipeline,Matriz Fase 3: arboles + smote (paso 'modelo'),HistGradientBoostingClassifier,class_weight,None,None,True,True,explícito,por defecto,src/modelo_final.py; src/experimentos.py; src/interpretabilidad.py; src/evaluacion_final.py
+src/experimentos.py::construir_pipeline,Matriz Fase 3: reglog + submuestreo_smote (paso 'modelo'),LogisticRegression,class_weight,None,None,True,True,explícito,por defecto,src/experimentos.py; src/interpretabilidad.py
+src/experimentos.py::construir_pipeline,Matriz Fase 3: arboles + submuestreo_smote (paso 'modelo'),HistGradientBoostingClassifier,class_weight,None,None,True,True,explícito,por defecto,src/modelo_final.py; src/experimentos.py; src/interpretabilidad.py; src/evaluacion_final.py
+src/no_supervisado.py (submuestra de 50000 flujos del lunes),Contraste no supervisado: LOF,LocalOutlierFactor,n_neighbors,20,20,True,True,explícito,por defecto,src/no_supervisado.py
+"src/experimentos.py, src/interpretabilidad.py, notebooks/02_baseline.ipynb",Validación cruzada,StratifiedKFold,n_splits,5,5,True,True,explícito,por defecto,src/experimentos.py; src/interpretabilidad.py
+src/interpretabilidad.py::importancia_permutacion,Importancia por permutación,permutation_importance,n_repeats,5,5,True,True,explícito,por defecto,src/interpretabilidad.py

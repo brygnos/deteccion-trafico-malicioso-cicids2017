@@ -1,0 +1,73 @@
+% Generado por reports/apendices/generar_apendices.py con get_params() sobre Clasificadores multiclase y binario (misma configuración).
+\begin{longtable}{L{3.9cm} L{3.7cm} L{3.0cm} L{2.4cm}}
+\caption{Clasificadores multiclase y binario (misma configuración): \texttt{HistGradientBoostingClassifier}, 21 parámetros. En \textbf{negrilla}, los escritos en la llamada del código (aunque coincidan con el valor por defecto); el resto quedó en el valor por defecto de scikit-learn 1.9.0.}\label{tab:param-hgb}\\
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\texttt{categorical\_features} & \texttt{'from\_dtype'} & \texttt{'from\_dtype'} & por defecto \\
+\textbf{\texttt{class\_weight}} & \textbf{\texttt{'balanced'}} & \texttt{None} & explícito \\
+\texttt{early\_stopping} & \texttt{'auto'} & \texttt{'auto'} & por defecto \\
+\texttt{interaction\_cst} & \texttt{None} & \texttt{None} & por defecto \\
+\texttt{l2\_regularization} & \texttt{0.0} & \texttt{0.0} & por defecto \\
+\texttt{learning\_rate} & \texttt{0.1} & \texttt{0.1} & por defecto \\
+\texttt{loss} & \texttt{'log\_loss'} & \texttt{'log\_loss'} & por defecto \\
+\texttt{max\_bins} & \texttt{255} & \texttt{255} & por defecto \\
+\texttt{max\_depth} & \texttt{None} & \texttt{None} & por defecto \\
+\texttt{max\_features} & \texttt{1.0} & \texttt{1.0} & por defecto \\
+\textbf{\texttt{max\_iter}} & \textbf{\texttt{200}} & \texttt{100} & explícito \\
+\texttt{max\_leaf\_nodes} & \texttt{31} & \texttt{31} & por defecto \\
+\texttt{min\_samples\_leaf} & \texttt{20} & \texttt{20} & por defecto \\
+\texttt{monotonic\_cst} & \texttt{None} & \texttt{None} & por defecto \\
+\texttt{n\_iter\_no\_change} & \texttt{10} & \texttt{10} & por defecto \\
+\textbf{\texttt{random\_state}} & \textbf{\texttt{42}} & \texttt{None} & explícito \\
+\texttt{scoring} & \texttt{'loss'} & \texttt{'loss'} & por defecto \\
+\texttt{tol} & \texttt{1e-07} & \texttt{1e-07} & por defecto \\
+\texttt{validation\_fraction} & \texttt{0.1} & \texttt{0.1} & por defecto \\
+\texttt{verbose} & \texttt{0} & \texttt{0} & por defecto \\
+\texttt{warm\_start} & \texttt{False} & \texttt{False} & por defecto \\
+\midrule
+\emph{Atributos ajustados} & \textbf{Multiclase} & \textbf{Binario} & \\
+\texttt{do\_early\_stopping\_} & \texttt{True} & \texttt{True} & \\
+\texttt{n\_iter\_ (iteraciones realmente usadas)} & \texttt{43} & \texttt{110} & \\
+\texttt{n\_trees\_per\_iteration\_} & \texttt{11} & \texttt{1} & \\
+\texttt{árboles totales} & \texttt{473} & \texttt{110} & \\
+\texttt{mejor iteración en la validación interna} & \texttt{33} & \texttt{100} & \\
+\texttt{n\_features\_in\_} & \texttt{48} & \texttt{48} & \\
+\texttt{clases} & \texttt{11} & \texttt{2} & \\
+\end{longtable}
+
+% Generado por reports/apendices/generar_apendices.py con get_params() sobre Detector de anomalías: bosque.
+\begin{longtable}{L{3.9cm} L{3.7cm} L{3.0cm} L{2.4cm}}
+\caption{Detector de anomalías: bosque: \texttt{IsolationForest}, 9 parámetros. En \textbf{negrilla}, los escritos en la llamada del código (aunque coincidan con el valor por defecto); el resto quedó en el valor por defecto de scikit-learn 1.9.0.}\label{tab:param-if}\\
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\texttt{bootstrap} & \texttt{False} & \texttt{False} & por defecto \\
+\texttt{contamination} & \texttt{'auto'} & \texttt{'auto'} & por defecto \\
+\texttt{max\_features} & \texttt{1.0} & \texttt{1.0} & por defecto \\
+\texttt{max\_samples} & \texttt{'auto'} & \texttt{'auto'} & por defecto \\
+\textbf{\texttt{n\_estimators}} & \textbf{\texttt{200}} & \texttt{100} & explícito \\
+\textbf{\texttt{n\_jobs}} & \textbf{\texttt{-1}} & \texttt{None} & explícito \\
+\textbf{\texttt{random\_state}} & \textbf{\texttt{42}} & \texttt{None} & explícito \\
+\texttt{verbose} & \texttt{0} & \texttt{0} & por defecto \\
+\texttt{warm\_start} & \texttt{False} & \texttt{False} & por defecto \\
+\midrule
+\multicolumn{4}{l}{\emph{Atributos ajustados (leídos del modelo entrenado)}} \\
+\texttt{max\_samples\_ (flujos por árbol)} & \multicolumn{3}{l}{\texttt{256}} \\
+\texttt{n\_features\_in\_} & \multicolumn{3}{l}{\texttt{48}} \\
+\texttt{umbral cuantil 0,5 \% / 1 \% / 2 \%} & \multicolumn{3}{l}{\texttt{-0,6369 / -0,6140 / -0,5870}} \\
+\end{longtable}

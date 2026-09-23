@@ -1,0 +1,114 @@
+% Generado por reports/apendices/generar_apendices.py con get_params() sobre Regresión logística (referencia lineal).
+\begin{longtable}{L{3.9cm} L{3.7cm} L{3.0cm} L{2.4cm}}
+\caption{Regresión logística (referencia lineal): \texttt{LogisticRegression}, 14 parámetros. En \textbf{negrilla}, los escritos en la llamada del código (aunque coincidan con el valor por defecto); el resto quedó en el valor por defecto de scikit-learn 1.9.0.}\label{tab:param-reglog}\\
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\texttt{C} & \texttt{1.0} & \texttt{1.0} & por defecto \\
+\textbf{\texttt{class\_weight}} & \textbf{\texttt{None} $\mid$ \texttt{'balanced'} (columna ``pesos'')} & \texttt{None} & explícito (según la técnica) \\
+\texttt{dual} & \texttt{False} & \texttt{False} & por defecto \\
+\texttt{fit\_intercept} & \texttt{True} & \texttt{True} & por defecto \\
+\texttt{intercept\_scaling} & \texttt{1} & \texttt{1} & por defecto \\
+\texttt{l1\_ratio} & \texttt{0.0} & \texttt{0.0} & por defecto \\
+\textbf{\texttt{max\_iter}} & \textbf{\texttt{1000}} & \texttt{100} & explícito \\
+\texttt{n\_jobs} & \texttt{None} & \texttt{None} & por defecto \\
+\texttt{penalty} & \texttt{'deprecated'} & \texttt{'deprecated'} & por defecto \\
+\textbf{\texttt{random\_state}} & \textbf{\texttt{42}} & \texttt{None} & explícito \\
+\texttt{solver} & \texttt{'lbfgs'} & \texttt{'lbfgs'} & por defecto \\
+\texttt{tol} & \texttt{0.0001} & \texttt{0.0001} & por defecto \\
+\texttt{verbose} & \texttt{0} & \texttt{0} & por defecto \\
+\texttt{warm\_start} & \texttt{False} & \texttt{False} & por defecto \\
+\end{longtable}
+
+% Generado por reports/apendices/generar_apendices.py con get_params() sobre SMOTE (\texttt{sampling\_strategy} es la función \texttt{estrategia\_smote}: eleva a 20.000 las clases con menos casos que eso).
+\begin{longtable}{L{3.9cm} L{3.7cm} L{3.0cm} L{2.4cm}}
+\caption{SMOTE (\texttt{sampling\_strategy} es la función \texttt{estrategia\_smote}: eleva a 20.000 las clases con menos casos que eso): \texttt{SMOTE}, 3 parámetros. En \textbf{negrilla}, los escritos en la llamada del código (aunque coincidan con el valor por defecto); el resto quedó en el valor por defecto de imbalanced-learn 0.14.2.}\label{tab:param-smote}\\
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\texttt{k\_neighbors} & \texttt{5} & \texttt{5} & por defecto \\
+\textbf{\texttt{random\_state}} & \textbf{\texttt{42}} & \texttt{None} & explícito \\
+\textbf{\texttt{sampling\_strategy}} & \textbf{\texttt{función}\allowbreak\ \texttt{estrategia\_smote}} & \texttt{'auto'} & explícito \\
+\end{longtable}
+
+% Generado por reports/apendices/generar_apendices.py con get_params() sobre Submuestreo aleatorio (\texttt{sampling\_strategy} es la función \texttt{estrategia\_submuestreo}: reduce BENIGN a 200.000 casos).
+\begin{longtable}{L{3.9cm} L{3.7cm} L{3.0cm} L{2.4cm}}
+\caption{Submuestreo aleatorio (\texttt{sampling\_strategy} es la función \texttt{estrategia\_submuestreo}: reduce BENIGN a 200.000 casos): \texttt{RandomUnderSampler}, 3 parámetros. En \textbf{negrilla}, los escritos en la llamada del código (aunque coincidan con el valor por defecto); el resto quedó en el valor por defecto de imbalanced-learn 0.14.2.}\label{tab:param-rus}\\
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\textbf{\texttt{random\_state}} & \textbf{\texttt{42}} & \texttt{None} & explícito \\
+\texttt{replacement} & \texttt{False} & \texttt{False} & por defecto \\
+\textbf{\texttt{sampling\_strategy}} & \textbf{\texttt{función}\allowbreak\ \texttt{estrategia\_submuestreo}} & \texttt{'auto'} & explícito \\
+\end{longtable}
+
+% Generado por reports/apendices/generar_apendices.py con get_params() sobre Local Outlier Factor (contraste; entrenado con una submuestra de 50.000 flujos benignos del lunes).
+\begin{longtable}{L{3.9cm} L{3.7cm} L{3.0cm} L{2.4cm}}
+\caption{Local Outlier Factor (contraste; entrenado con una submuestra de 50.000 flujos benignos del lunes): \texttt{LocalOutlierFactor}, 9 parámetros. En \textbf{negrilla}, los escritos en la llamada del código (aunque coincidan con el valor por defecto); el resto quedó en el valor por defecto de scikit-learn 1.9.0.}\label{tab:param-lof}\\
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Parámetro} & \textbf{Valor usado} & \textbf{Valor por defecto} & \textbf{Origen} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\texttt{algorithm} & \texttt{'auto'} & \texttt{'auto'} & por defecto \\
+\texttt{contamination} & \texttt{'auto'} & \texttt{'auto'} & por defecto \\
+\texttt{leaf\_size} & \texttt{30} & \texttt{30} & por defecto \\
+\texttt{metric} & \texttt{'minkowski'} & \texttt{'minkowski'} & por defecto \\
+\texttt{metric\_params} & \texttt{None} & \texttt{None} & por defecto \\
+\textbf{\texttt{n\_jobs}} & \textbf{\texttt{-1}} & \texttt{None} & explícito \\
+\textbf{\texttt{n\_neighbors}} & \textbf{\texttt{20}} & \texttt{20} & explícito (igual al defecto) \\
+\textbf{\texttt{novelty}} & \textbf{\texttt{True}} & \texttt{False} & explícito \\
+\texttt{p} & \texttt{2} & \texttt{2} & por defecto \\
+\end{longtable}
+
+% Generado por reports/apendices/generar_apendices.py leyendo las constantes de src/.
+\begin{longtable}{L{2.9cm} L{3.5cm} L{4.3cm} L{3.2cm}}
+\caption{Parámetros del protocolo que no viven en los modelos serializados.}\label{tab:param-protocolo}\\
+\toprule
+\textbf{Componente} & \textbf{Objeto} & \textbf{Valores fijados} & \textbf{Dónde} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Componente} & \textbf{Objeto} & \textbf{Valores fijados} & \textbf{Dónde} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Partición única & \texttt{train\_test\_split} & test\_size=0.2; stratify=Label; random\_state=42 & \path{src/split.py} \\
+Validación cruzada & \texttt{StratifiedKFold} & n\_splits=5 (igual al defecto); shuffle=True; random\_state=42 & \path{src/experimentos.py}, \path{src/interpretabilidad.py}, \path{notebooks/02_baseline.ipynb} \\
+Clasificador trivial (línea base) & \texttt{DummyClassifier} & strategy='most\_frequent' & \path{notebooks/02_baseline.ipynb} \\
+Importancia por permutación & \texttt{permutation\_\allowbreak importance} & scoring='f1\_macro'; n\_repeats=5 (igual al defecto); random\_state=42; n\_jobs=-1; una sola partición (300.000 flujos de la validación de la primera) & \path{src/interpretabilidad.py} \\
+Modelo explicado por permutación & \texttt{HistGradient\allowbreak Boosting\allowbreak Classifier} & binario; misma configuración del Cuadro~\ref{tab:param-hgb}; ajustado con el 80\,\% de la primera partición & \path{src/interpretabilidad.py} \\
+Explicación por alerta & \texttt{shap.TreeExplainer} & sobre el clasificador multiclase serializado; parámetros por defecto & \path{app/pantallas.py} \\
+Umbral de operación de Bot & regla & alarma de Bot solo si $P(\mathrm{Bot}) \geq 0{,}999$; si no, la segunda clase más probable; fijado con probabilidades out-of-fold del entrenamiento & \path{src/evaluacion_final.py} \\
+Cuantiles del detector & constante & 0{,}5\,\%; 1\,\%; 2\,\% de los scores del lunes (1\,\% = referencia) & \path{src/no_supervisado.py}, \path{src/evaluacion_final.py} \\
+Variable identificadora retirada (prueba del puerto) & constante & \texttt{Destination Port} & \path{src/interpretabilidad.py} \\
+Selección de variables & constante & $|r| > 0{,}95$ sobre 500.000 flujos del entrenamiento (semilla 42); una representante por bloque & \path{src/features.py} \\
+Semilla única y versiones & constante & RANDOM\_STATE = 42; scikit-learn 1.9.0; Python 3.13; imbalanced-learn 0.14.2 & \path{src/config.py}, \path{models/metadatos.json}, \path{requirements*.txt} \\
+\end{longtable}

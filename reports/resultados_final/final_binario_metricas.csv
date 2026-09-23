@@ -1,0 +1,4 @@
+metrica,valor
+recall_ataque,0.9995889510029595
+precision_ataque,0.9935330990929996
+macro_f1,0.9979204152451324

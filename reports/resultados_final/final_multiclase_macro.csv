@@ -1,0 +1,5 @@
+variante,regla,macro_f1,macro_f1_solo_ataques
+con_puerto,argmax,0.9668631769995563,0.9636405324330827
+con_puerto,umbral_bot,0.9747291126361066,0.972275162486477
+sin_identificadores,argmax,0.9421560263407973,0.9365538615413351
+sin_identificadores,umbral_bot,0.8879086679339683,0.876866361541335

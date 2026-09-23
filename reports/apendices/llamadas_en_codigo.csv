@@ -1,0 +1,24 @@
+objeto,donde,argumentos_con_nombre,argumentos_posicionales
+HistGradientBoostingClassifier,src/modelo_final.py:58,"class_weight, max_iter, random_state",0
+HistGradientBoostingClassifier,src/experimentos.py:94,"class_weight, max_iter, random_state",0
+HistGradientBoostingClassifier,src/interpretabilidad.py:97,"class_weight, max_iter, random_state",0
+HistGradientBoostingClassifier,src/evaluacion_final.py:146,"class_weight, max_iter, random_state",0
+HistGradientBoostingClassifier,src/evaluacion_final.py:126,"class_weight, max_iter, random_state",0
+IsolationForest,src/modelo_final.py:100,"n_estimators, n_jobs, random_state",0
+IsolationForest,src/no_supervisado.py:80,"n_estimators, n_jobs, random_state",0
+IsolationForest,src/evaluacion_final.py:168,"n_estimators, n_jobs, random_state",0
+StandardScaler,src/modelo_final.py:99,,0
+StandardScaler,src/experimentos.py:92,,0
+StandardScaler,src/no_supervisado.py:72,,0
+StandardScaler,src/interpretabilidad.py:80,,0
+StandardScaler,src/evaluacion_final.py:167,,0
+LogisticRegression,src/experimentos.py:89,"class_weight, max_iter, random_state",0
+LogisticRegression,src/interpretabilidad.py:81,"max_iter, random_state",0
+SMOTE,src/experimentos.py:109,"random_state, sampling_strategy",0
+RandomUnderSampler,src/experimentos.py:104,"random_state, sampling_strategy",0
+LocalOutlierFactor,src/no_supervisado.py:95,"n_jobs, n_neighbors, novelty",0
+StratifiedKFold,src/experimentos.py:125,"n_splits, random_state, shuffle",0
+StratifiedKFold,src/interpretabilidad.py:76,"n_splits, random_state, shuffle",0
+StratifiedKFold,src/interpretabilidad.py:95,"n_splits, random_state, shuffle",0
+train_test_split,src/split.py:42,"random_state, stratify, test_size",1
+permutation_importance,src/interpretabilidad.py:104,"n_jobs, n_repeats, random_state, scoring",3

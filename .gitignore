@@ -1,0 +1,75 @@
+# ============================================
+# Datos (grandes — NUNCA versionar en git)
+# ============================================
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Formatos de datos pesados, en cualquier ubicación
+*.csv
+*.parquet
+*.pcap
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# Entornos virtuales
+.venv/
+.venv-app/
+venv/
+env/
+ENV/
+
+# ============================================
+# Jupyter
+# ============================================
+.ipynb_checkpoints/
+
+# ============================================
+# Reportes / figuras generadas
+# ============================================
+reports/figures/*
+!reports/figures/.gitkeep
+
+# Excepciones: los resultados agregados (KB) y las figuras SÍ se versionan —
+# alimentan los notebooks 03-06 y los informes (van después de *.csv y de
+# reports/figures/* para ganarles según las reglas de gitignore)
+!reports/resultados_fase3/*.csv
+!reports/resultados_fase4/*.csv
+!reports/resultados_final/*.csv
+!reports/apendices/*.csv
+!reports/figures/*.png
+
+# Los archivos de demostración del tablero sí se versionan
+!data/demo/*.csv
+
+# ============================================
+# Sistema operativo / editores
+# ============================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ============================================
+# Archivos locales de trabajo (no se comparten)
+# ============================================
+_trabajo/
+.venv*/
+
+# Fuente del reporte técnico: se edita aquí pero no se versiona (sí se
+# versionan los fragmentos .tex de reports/apendices/)
+reports/*.tex
+
+# Zips generados (entrega y datos intermedios): nunca versionarlos
+*.zip
