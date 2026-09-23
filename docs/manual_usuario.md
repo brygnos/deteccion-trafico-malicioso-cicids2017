@@ -470,7 +470,9 @@ procesa en memoria y lo descarta al terminar la sesión. En local, un lote de
    priorizadas y la reducción de la carga de revisión.
 4. Ve a la pantalla Alertas y filtra con **Tipo de ataque**, **Confianza
    mínima** y **Marca de anomalía** (Todas, Solo anómalas o Solo no anómalas).
-   La tabla y el conteo de alertas mostradas se actualizan al instante.
+   La tabla y el conteo de alertas mostradas se actualizan al instante. El
+   filtro se conserva mientras recorres las pantallas y vuelve a empezar cuando
+   cargas otro archivo o cambias de demo.
 5. Haz clic en **Descargar estas alertas en CSV** para exportar exactamente las
    alertas que ves, con el filtro aplicado.
 6. En la pantalla Reportes, sección "Descargas", puedes bajar también los

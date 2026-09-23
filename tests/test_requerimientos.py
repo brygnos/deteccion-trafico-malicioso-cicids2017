@@ -374,10 +374,13 @@ def test_R16_resultados_clave_en_tres_clics_o_menos():
     hasta cada resultado clave. Criterio: ≤ 3 clics."""
 
 
-def test_R17_filtrar_y_exportar_refleja_el_filtro(demo_rica, recursos):
+def test_R17_filtrar_y_exportar_refleja_el_filtro(demo_rica, demo_realista, recursos):
     """R17. Prueba prevista: filtrado de la cola de alertas y descarga del
     archivo, verificando que refleja el filtro aplicado. Criterio: filtra por
-    tipo, confianza y marca de anomalía; exporta resultados y métricas en CSV."""
+    tipo, confianza y marca de anomalía; exporta resultados y métricas en CSV.
+    Además recorre el tablero sin navegador (AppTest): filtra la demo rica,
+    cambia a la realista y comprueba que la descarga de Reportes corresponde
+    siempre al archivo activo y al filtro y umbral vigentes."""
     import io
     res = demo_rica["resultado"]
     anomalo, _ = nucleo.marcar_anomalias(res, recursos, "1%")
@@ -397,6 +400,48 @@ def test_R17_filtrar_y_exportar_refleja_el_filtro(demo_rica, recursos):
     # las métricas fijas también se pueden exportar
     buf2 = io.StringIO(); recursos["metricas_clase"].to_csv(buf2, index=False)
     assert len(pd.read_csv(io.StringIO(buf2.getvalue()))) == 11
+
+    # En el tablero: Reportes ofrece las alertas filtradas del archivo activo.
+    # Se filtra la demo rica, se cambia a la realista y la descarga de Reportes
+    # tiene que corresponder a la realista (antes seguía con las de la rica
+    # hasta volver a visitar Alertas).
+    from streamlit.testing.v1 import AppTest
+    from app.formato import formatear
+
+    at = AppTest.from_file(str(RAIZ / "streamlit_app.py"), default_timeout=120)
+    at.run()
+
+    def clic(texto):
+        next(b for b in at.button if b.label == texto).click().run()
+
+    def ir_a(pantalla):
+        at.sidebar.radio[0].set_value(pantalla).run()
+
+    def descarga_filtrada():
+        return next(d.proto for d in at.get("download_button")
+                    if d.proto.label.startswith("Alertas con el filtro"))
+
+    clic("Demo rica en ataques")
+    ir_a("Alertas")
+    next(w for w in at.multiselect if w.label == "Tipo de ataque").set_value(tipos).run()
+    next(w for w in at.slider if w.label == "Confianza mínima").set_value(90).run()
+    next(w for w in at.selectbox if w.label == "Marca de anomalía").set_value("Solo no anómalas").run()
+    ir_a("Reportes")
+    at.run()  # una ejecución más fuera de Alertas: el filtro no se pierde
+    assert descarga_filtrada().label.endswith(f"({formatear(len(filtro))})"), descarga_filtrada().label
+
+    clic("Demo de proporción realista")
+    alertas_realista = int((demo_realista["resultado"].clase != nucleo.NOMBRE_NORMAL).sum())
+    assert descarga_filtrada().label.endswith(f"({formatear(alertas_realista)})"), (
+        f"Reportes no corresponde a la demo realista: {descarga_filtrada().label}")
+
+    # el umbral elegido en Detección de anomalías sigue vigente en Reportes
+    ir_a("Detección de anomalías")
+    at.select_slider[0].set_value("2%").run()
+    ir_a("Reportes")
+    at.run()
+    assert "umbral 2%" in descarga_filtrada().help, descarga_filtrada().help
+    assert not at.exception, [e.value for e in at.exception]
 
 
 def test_R18_no_escribe_el_archivo_en_disco_y_usa_solo_metadatos(demo_crudo, caracteristicas, recursos):

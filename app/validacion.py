@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from app.formato import formatear
+
 # Columnas con el código -1 = "no aplica", del que se derivan indicadores
 SENTINELAS = ["Init_Win_bytes_forward", "Init_Win_bytes_backward"]
 
@@ -99,7 +101,7 @@ def validar_y_preparar(archivo, caracteristicas: list[str]) -> ResultadoValidaci
         muestra = ", ".join(faltantes[:8]) + (" …" if len(faltantes) > 8 else "")
         r.mensajes.append(
             ("error",
-             f"Faltan {len(faltantes)} de las {len(requeridas)} características "
+             f"Faltan {formatear(len(faltantes))} de las {formatear(len(requeridas))} características "
              f"que el modelo necesita (por ejemplo: {muestra}). Esto suele pasar "
              "cuando el archivo no fue generado con CICFlowMeter o se recortaron "
              "columnas. No se puede clasificar sin ellas.")
@@ -110,7 +112,7 @@ def validar_y_preparar(archivo, caracteristicas: list[str]) -> ResultadoValidaci
     if extras:
         r.mensajes.append(
             ("info",
-             f"El archivo trae {len(extras)} columnas adicionales que el modelo "
+             f"El archivo trae {formatear(len(extras))} columnas adicionales que el modelo "
              "no usa; se ignoraron sin problema.")
         )
 
@@ -125,7 +127,7 @@ def validar_y_preparar(archivo, caracteristicas: list[str]) -> ResultadoValidaci
     if no_numericos:
         r.mensajes.append(
             ("advertencia",
-             f"Se encontraron {no_numericos} valores que no son números (texto "
+             f"Se encontraron {formatear(no_numericos)} valores que no son números (texto "
              "donde debía haber una cifra); se tratan como inválidos.")
         )
 
@@ -147,7 +149,7 @@ def validar_y_preparar(archivo, caracteristicas: list[str]) -> ResultadoValidaci
             muestra_filas += " …"
         r.mensajes.append(
             ("advertencia",
-             f"{r.filas_excluidas} de {r.filas_leidas} filas traen valores "
+             f"{formatear(r.filas_excluidas)} de {formatear(r.filas_leidas)} filas traen valores "
              "faltantes o infinitos en características que el modelo necesita; "
              "se excluyen de la clasificación (es más honesto que inventarles "
              f"un valor). Filas afectadas: {muestra_filas}.")
@@ -168,7 +170,7 @@ def validar_y_preparar(archivo, caracteristicas: list[str]) -> ResultadoValidaci
     r.mensajes.insert(
         0,
         ("ok",
-         f"Archivo válido: {r.filas_validas:,} de {r.filas_leidas:,} filas "
+         f"Archivo válido: {formatear(r.filas_validas)} de {formatear(r.filas_leidas)} filas "
          "listas para clasificar."),
     )
     return r

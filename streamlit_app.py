@@ -10,6 +10,7 @@ en memoria y lo descarta al terminar la sesión.
 import streamlit as st
 
 from app import nucleo, pantallas, validacion
+from app.formato import formatear
 
 st.set_page_config(
     page_title="Detector de tráfico malicioso",
@@ -51,13 +52,16 @@ if "estado" not in st.session_state:
     st.session_state.estado = None  # dict con nombre, reporte y resultado
 if "archivo_procesado" not in st.session_state:
     st.session_state.archivo_procesado = None
-# El umbral de anomalías (presupuesto de falsas alarmas) lo crea el deslizador
-# de la pantalla Detección de anomalías con su valor por defecto; las demás
-# pantallas lo leen con pantallas.umbral_actual().
+# El umbral de anomalías (presupuesto de falsas alarmas) lo fija el deslizador
+# de la pantalla Detección de anomalías y se guarda en la sesión aunque se
+# cambie de pantalla; las demás pantallas lo leen con pantallas.umbral_actual().
 
 
 def _procesar(origen, nombre: str) -> None:
     """Valida y clasifica un archivo (buffer en memoria o ruta de demo)."""
+    # Archivo nuevo: se olvida todo lo derivado del anterior (filtro de
+    # alertas y alerta elegida), para que ninguna pantalla lo siga mostrando
+    pantallas.reiniciar_estado_del_archivo()
     with st.spinner(f"Validando y clasificando '{nombre}'…"):
         reporte = validacion.validar_y_preparar(origen, recursos["meta"]["caracteristicas"])
         if reporte.bloqueado:
@@ -72,8 +76,8 @@ def _procesar(origen, nombre: str) -> None:
         pantallas.umbral_actual(),
     )
     st.toast(
-        f"'{nombre}': {reporte.filas_validas:,} flujos clasificados, "
-        f"{n_alertas:,} alertas.",
+        f"'{nombre}': {formatear(reporte.filas_validas)} flujos clasificados, "
+        f"{formatear(n_alertas)} alertas.",
         icon="✅",
     )
 

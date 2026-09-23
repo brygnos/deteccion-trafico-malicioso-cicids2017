@@ -5,14 +5,46 @@ modelo, para que cada pantalla se entienda por sí sola."""
 
 import io
 from datetime import datetime
+from functools import partial
 
 import numpy as np
 import pandas as pd
 import streamlit as st
 
 from app import nucleo
+from app.formato import formatear
 
 NIVELES = {"ok": st.success, "info": st.info, "advertencia": st.warning, "error": st.error}
+
+# Formatos para las tablas en pantalla (coma decimal). Los CSV descargables se
+# generan con los valores sin formato, con punto decimal.
+ENTERO = partial(formatear, decimales=0)
+TRES_DECIMALES = partial(formatear, decimales=3)
+PORCENTAJE = partial(formatear, decimales=1, porcentaje=True)
+
+# Convención numérica de los gráficos: la misma de formatear (coma decimal y
+# punto de miles), que st.bar_chart no permite fijar
+LOCALE_GRAFICOS = {"number": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", ""]}}
+
+
+def _grafico_barras(clases: pd.Series) -> None:
+    """Barras con el número de flujos de cada clase, con los ejes en la
+    convención numérica del proyecto."""
+    import altair as alt
+
+    conteos = clases.value_counts().rename_axis("Clase").reset_index(name="Flujos")
+    grafico = (
+        alt.Chart(conteos)
+        .mark_bar()
+        .encode(
+            x=alt.X("Clase:N", title=None),
+            y=alt.Y("Flujos:Q", title=None),
+            tooltip=[alt.Tooltip("Clase:N"), alt.Tooltip("Flujos:Q", format=",d")],
+        )
+        .configure(locale=LOCALE_GRAFICOS)
+    )
+    st.altair_chart(grafico, width="stretch")
+
 
 # Nombres en lenguaje llano para las características más influyentes.
 # Se muestran como "nombre llano (nombre técnico)".
@@ -121,10 +153,93 @@ def _nota_tres_modelos() -> None:
 
 UMBRAL_POR_DEFECTO = "1%"
 
+# ------------------------------------------------------------ estado de la sesión ---
+# Streamlit borra el valor de un control cuando la pantalla que lo dibuja deja
+# de mostrarse, así que un valor que usan otras pantallas (el umbral, el filtro
+# de alertas) se guarda también en una clave propia, con el prefijo "_", que no
+# se borra. Además, los controles que dependen del archivo cargado se reinician
+# cada vez que cambia el archivo activo (ver reiniciar_estado_del_archivo).
+CONTROLES_DEL_ARCHIVO = ("filtro_tipos", "filtro_confianza", "filtro_anomalia", "alerta_elegida")
+
+
+def _guardar_control(clave: str) -> None:
+    st.session_state[f"_{clave}"] = st.session_state[clave]
+
+
+def _control_persistente(clave: str, por_defecto, validos=None) -> dict:
+    """Devuelve los argumentos key/on_change de un control cuyo valor debe
+    sobrevivir al cambio de pantalla. Carga en el control el valor guardado
+    (o `por_defecto`) y, si se dan `validos`, descarta un valor guardado que ya
+    no está entre las opciones."""
+    guardado = st.session_state.get(f"_{clave}", por_defecto)
+    if validos is not None:
+        es_lista = isinstance(guardado, list)
+        if (es_lista and not set(guardado) <= set(validos)) or (not es_lista and guardado not in validos):
+            guardado = por_defecto
+    st.session_state[f"_{clave}"] = guardado
+    st.session_state[clave] = guardado
+    return {"key": clave, "on_change": _guardar_control, "args": (clave,)}
+
+
+def reiniciar_estado_del_archivo() -> None:
+    """Olvida los controles derivados del archivo anterior (filtro de alertas y
+    alerta elegida en Interpretabilidad). Se llama cada vez que cambia el
+    archivo activo, para que ninguna pantalla muestre datos del anterior."""
+    for clave in CONTROLES_DEL_ARCHIVO:
+        st.session_state.pop(clave, None)
+        st.session_state.pop(f"_{clave}", None)
+
 
 def umbral_actual() -> str:
     """El presupuesto de falsas alarmas vigente en la sesión."""
-    return st.session_state.get("umbral_cuantil", UMBRAL_POR_DEFECTO)
+    return st.session_state.get("_umbral_cuantil", UMBRAL_POR_DEFECTO)
+
+
+def filtro_actual(tipos_disponibles: list) -> dict:
+    """El filtro de alertas vigente para el archivo activo (todas las alertas
+    si aún no se ha filtrado nada en la pantalla Alertas)."""
+    tipos = st.session_state.get("_filtro_tipos", tipos_disponibles)
+    if not set(tipos) <= set(tipos_disponibles):
+        tipos = tipos_disponibles
+    return {
+        "tipos": tipos,
+        "confianza_minima": st.session_state.get("_filtro_confianza", 0) / 100,
+        "marca": st.session_state.get("_filtro_anomalia", "Todas"),
+    }
+
+
+def _alertas_filtradas(resultado: pd.DataFrame, recursos: dict):
+    """Aplica el filtro vigente al archivo activo. Devuelve las alertas
+    filtradas, todas las alertas y una descripción del filtro en llano."""
+    umbral = umbral_actual()
+    anomalo, _ = nucleo.marcar_anomalias(resultado, recursos, umbral)
+    todas = resultado.assign(anomalo=anomalo)
+    todas = todas[todas["clase"] != nucleo.NOMBRE_NORMAL]
+    tipos_disponibles = sorted(todas["clase"].unique())
+    filtro = filtro_actual(tipos_disponibles)
+    filtradas = nucleo.filtrar_alertas(resultado, anomalo, filtro["tipos"],
+                                       filtro["confianza_minima"], filtro["marca"])
+    descripcion = (
+        f"{ENTERO(len(filtradas))} alertas (tipos: {len(filtro['tipos'])} de "
+        f"{len(tipos_disponibles)}; confianza ≥ {formatear(filtro['confianza_minima'], 0, porcentaje=True)}; "
+        f"anomalía: {filtro['marca'].lower()}; umbral {umbral})"
+    )
+    return filtradas, todas, descripcion
+
+
+def _tabla_alertas(alertas: pd.DataFrame) -> pd.DataFrame:
+    """Las alertas con los nombres de columna que ve el usuario (y el CSV)."""
+    return alertas.rename(
+        columns={
+            "fila": "Fila del archivo",
+            "clase": "Tipo de ataque",
+            "confianza": "Confianza",
+            "clase_binaria": "¿Ataque? (modelo binario)",
+            "prob_ataque": "Prob. de ataque",
+            "anomalo": "Anómalo",
+            "score_anomalia": "Score de anomalía",
+        }
+    )
 
 
 def mostrar_validacion(reporte) -> None:
@@ -154,12 +269,12 @@ def panel_resumen(recursos, estado) -> None:
     # KPI de negocio primero: la carga de revisión, no la métrica del modelo
     st.subheader("Cuánto trabajo de revisión te ahorra")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Flujos cargados", f"{n:,}")
-    c2.metric("Alertas priorizadas", f"{n_alertas:,}")
-    c3.metric("Reducción de la carga de revisión", f"{reduccion:.1f}%")
+    c1.metric("Flujos cargados", formatear(n))
+    c2.metric("Alertas priorizadas", formatear(n_alertas))
+    c3.metric("Reducción de la carga de revisión", formatear(reduccion, 1) + "%")
     st.markdown(
-        f"- **Sin la herramienta:** {n:,} flujos por revisar uno por uno.\n"
-        f"- **Con la herramienta:** {n_alertas:,} alertas priorizadas "
+        f"- **Sin la herramienta:** {formatear(n)} flujos por revisar uno por uno.\n"
+        f"- **Con la herramienta:** {formatear(n_alertas)} alertas priorizadas "
         "(flujos que el modelo clasificó como algún tipo de ataque)."
     )
     st.warning(
@@ -177,7 +292,7 @@ def panel_resumen(recursos, estado) -> None:
             "Cada barra cuenta cuántos flujos de tu archivo fueron "
             "clasificados en cada tipo de ataque."
         )
-        st.bar_chart(alertas["clase"].value_counts())
+        _grafico_barras(alertas["clase"])
 
     umbral = umbral_actual()
     anomalo, _ = nucleo.marcar_anomalias(resultado, recursos, umbral)
@@ -185,7 +300,7 @@ def panel_resumen(recursos, estado) -> None:
     st.markdown(
         f"El detector de anomalías es un segundo modelo que aprendió solo cómo "
         f"se ve el tráfico normal y marca lo que se sale de ese patrón. En este caso señaló "
-        f"**{int(anomalo.sum()):,}** flujos como anómalos al umbral actual del "
+        f"**{formatear(anomalo.sum())}** flujos como anómalos al umbral actual del "
         f"**{umbral}**. El detalle, el ajuste del umbral y los límites de este "
         "detector están en la pantalla *Detección de anomalías*."
     )
@@ -208,7 +323,7 @@ def pantalla_clasificacion(recursos, estado) -> None:
     else:
         resultado = estado["resultado"]
         st.caption("Fuente: el archivo cargado en esta sesión.")
-        st.bar_chart(resultado["clase"].value_counts())
+        _grafico_barras(resultado["clase"])
         tabla = (
             resultado.groupby("clase")
             .agg(flujos=("clase", "size"), confianza_media=("confianza", "mean"))
@@ -217,8 +332,8 @@ def pantalla_clasificacion(recursos, estado) -> None:
             .rename(columns={"clase": "Clase", "flujos": "Flujos",
                              "confianza_media": "Confianza media"})
         )
-        tabla["Confianza media"] = tabla["Confianza media"].map(lambda v: f"{v:.1%}")
-        st.dataframe(tabla, hide_index=True, width="stretch")
+        st.dataframe(tabla.style.format({"Flujos": ENTERO, "Confianza media": PORCENTAJE}),
+                     hide_index=True, width="stretch")
         st.caption(
             "La **confianza** es la probabilidad que el modelo le asigna a la "
             "clase que eligió para el flujo: 99% significa que casi no duda; "
@@ -258,10 +373,13 @@ def pantalla_clasificacion(recursos, estado) -> None:
             "soporte": "Casos en la prueba",
         }
     ).sort_values("Casos en la prueba", ascending=False)
-    for col in ["Detección (recall)", "Acierto de la alarma (precisión)",
-                "Calidad del ordenamiento (AP)"]:
-        metricas[col] = metricas[col].round(3)
-    st.dataframe(metricas, hide_index=True, width="stretch")
+    st.dataframe(
+        metricas.style.format({"Detección (recall)": TRES_DECIMALES,
+                               "Acierto de la alarma (precisión)": TRES_DECIMALES,
+                               "Calidad del ordenamiento (AP)": TRES_DECIMALES,
+                               "Casos en la prueba": ENTERO}),
+        hide_index=True, width="stretch",
+    )
     st.caption(
         "Cómo leer la tabla: **Detección (recall):** de todos los casos "
         "reales de esa clase, qué fracción encontró el modelo. **Acierto de "
@@ -282,7 +400,7 @@ def pantalla_clasificacion(recursos, estado) -> None:
         confusion = recursos["confusion"].copy()
         confusion.index = [nucleo.nombre_visible(c) for c in confusion.index]
         confusion.columns = [nucleo.nombre_visible(c) for c in confusion.columns]
-        st.dataframe(confusion, width="stretch")
+        st.dataframe(confusion.style.format(ENTERO), width="stretch")
 
 
 def _tabla_falsas_alarmas_dia(recursos, etiqueta_cuantil: str) -> pd.DataFrame:
@@ -342,8 +460,7 @@ def pantalla_anomalias(recursos, estado) -> None:
     umbral = st.select_slider(
         "Presupuesto de falsas alarmas (umbral del detector)",
         options=list(nucleo.CUANTILES),
-        value=UMBRAL_POR_DEFECTO,
-        key="umbral_cuantil",
+        **_control_persistente("umbral_cuantil", UMBRAL_POR_DEFECTO, validos=list(nucleo.CUANTILES)),
         help="Más bajo = más estricto (menos falsas alarmas, atrapa menos); "
              "más alto = más sensible (atrapa más, con más falsas alarmas). "
              "El umbral elegido aplica también a la marca de anomalía de las "
@@ -357,7 +474,7 @@ def pantalla_anomalias(recursos, estado) -> None:
         anomalo, corte = nucleo.marcar_anomalias(resultado, recursos, umbral)
         st.metric(
             f"Flujos anómalos al umbral del {umbral}",
-            f"{int(anomalo.sum()):,} de {len(resultado):,}",
+            f"{formatear(anomalo.sum())} de {formatear(len(resultado))}",
         )
         if anomalo.any():
             tabla = resultado.loc[anomalo, ["fila", "clase", "confianza", "score_anomalia"]]
@@ -366,8 +483,8 @@ def pantalla_anomalias(recursos, estado) -> None:
                          "confianza": "Confianza del tipo", "score_anomalia": "Score de anomalía"}
             )
             st.dataframe(
-                tabla.style.format({"Confianza del tipo": "{:.1%}",
-                                    "Score de anomalía": "{:.3f}"}),
+                tabla.style.format({"Confianza del tipo": PORCENTAJE,
+                                    "Score de anomalía": TRES_DECIMALES}),
                 hide_index=True, width="stretch",
             )
             st.caption(
@@ -416,20 +533,23 @@ def pantalla_anomalias(recursos, estado) -> None:
         f"ahora mismo, {umbral}."
     )
     tabla_dia = _tabla_falsas_alarmas_dia(recursos, umbral)
+    # La cifra va como texto con coma decimal y la barra aparte, sin etiqueta:
+    # la etiqueta de una barra no admite coma decimal.
     st.dataframe(
-        tabla_dia.style.format({"Falsas alarmas": "{:.1%}"}),
+        tabla_dia.assign(barra=tabla_dia["Falsas alarmas"]).style.format(
+            {"Flujos normales evaluados": ENTERO, "Falsas alarmas": PORCENTAJE}),
         hide_index=True,
         width="stretch",
         column_config={
-            "Falsas alarmas": st.column_config.ProgressColumn(
-                "Falsas alarmas", min_value=0.0,
+            "barra": st.column_config.ProgressColumn(
+                " ", min_value=0.0,
                 max_value=float(max(0.12, tabla_dia["Falsas alarmas"].max())),
-                format="%.1f%%",
+                format=" ",
             )
         },
     )
     peor = tabla_dia.loc[tabla_dia["Falsas alarmas"].idxmax()]
-    peor_pct = f"{peor['Falsas alarmas']:.1%}".replace(".", ",")  # 9,6% en prosa
+    peor_pct = PORCENTAJE(peor["Falsas alarmas"])  # 9,6% en prosa
     veces = round(peor["Falsas alarmas"] / float(nucleo.CUANTILES[umbral]))
     st.markdown(
         "**Cómo leerla y por qué es importante.** El detector se calibró con el "
@@ -481,18 +601,21 @@ def pantalla_interpretabilidad(recursos, estado) -> None:
     )
     importancia = recursos["importancia"].head(10).copy()
     importancia["Característica"] = importancia["feature"].map(nombre_llano)
+    # Cifra como texto con coma decimal y barra aparte, sin etiqueta (la
+    # etiqueta de una barra no admite coma decimal)
     st.dataframe(
-        importancia[["Característica", "importancia_media"]].rename(
-            columns={"importancia_media": "Cuánto depende el modelo de ella"}
-        ),
+        importancia[["Característica", "importancia_media"]]
+        .assign(barra=importancia["importancia_media"])
+        .rename(columns={"importancia_media": "Cuánto depende el modelo de ella"})
+        .style.format({"Cuánto depende el modelo de ella": TRES_DECIMALES}),
         hide_index=True,
         width="stretch",
         column_config={
-            "Cuánto depende el modelo de ella": st.column_config.ProgressColumn(
-                "Cuánto depende el modelo de ella",
+            "barra": st.column_config.ProgressColumn(
+                " ",
                 min_value=0.0,
                 max_value=float(importancia["importancia_media"].max()),
-                format="%.3f",
+                format=" ",
             )
         },
     )
@@ -541,13 +664,16 @@ def pantalla_interpretabilidad(recursos, estado) -> None:
         )
         return
 
+    # El número de fila va sin separador de miles: es el identificador que se
+    # busca en el CSV de origen
     opciones = {
-        f"Fila {int(f.fila)}: {f.clase} (confianza {f.confianza:.0%})": int(f.fila)
+        f"Fila {int(f.fila)}: {f.clase} (confianza {formatear(f.confianza, 0, porcentaje=True)})": int(f.fila)
         for f in alertas.itertuples()
     }
     seleccion = st.selectbox(
         "Elige una alerta para ver qué pesó en esa decisión",
         list(opciones),
+        **_control_persistente("alerta_elegida", next(iter(opciones)), validos=list(opciones)),
         help="La explicación se calcula en el momento para el flujo elegido "
              "(tarda milisegundos).",
     )
@@ -577,7 +703,8 @@ def pantalla_interpretabilidad(recursos, estado) -> None:
         }
     )
     st.dataframe(
-        tabla.style.format({"Valor en este flujo": "{:,.2f}", "Peso en la decisión": "{:+.2f}"}),
+        tabla.style.format({"Valor en este flujo": partial(formatear, decimales=2),
+                            "Peso en la decisión": partial(formatear, decimales=2, signo=True)}),
         hide_index=True,
         width="stretch",
         column_config={
@@ -615,9 +742,7 @@ def pantalla_alertas(recursos, estado) -> None:
 
     resultado = estado["resultado"]
     umbral = umbral_actual()
-    anomalo, _ = nucleo.marcar_anomalias(resultado, recursos, umbral)
-    resultado = resultado.assign(anomalo=anomalo)
-    alertas = resultado[resultado["clase"] != nucleo.NOMBRE_NORMAL].copy()
+    alertas = resultado[resultado["clase"] != nucleo.NOMBRE_NORMAL]
     if alertas.empty:
         st.success(
             "El modelo no clasificó ningún flujo de tu archivo como ataque. "
@@ -627,41 +752,31 @@ def pantalla_alertas(recursos, estado) -> None:
         )
         return
 
-    st.markdown(f"**{len(alertas):,} alertas** de {len(resultado):,} flujos cargados.")
+    st.markdown(f"**{formatear(len(alertas))} alertas** de {formatear(len(resultado))} flujos cargados.")
 
+    # Los tres filtros guardan su valor al cambiar de pantalla (Reportes los
+    # usa) y se reinician cuando cambia el archivo activo
     f1, f2, f3 = st.columns(3)
     tipos = sorted(alertas["clase"].unique())
-    tipos_sel = f1.multiselect("Tipo de ataque", tipos, default=tipos,
-                               help="Deja solo los tipos que quieres revisar.")
-    conf_min = f2.slider(
-        "Confianza mínima", 0.0, 1.0, 0.0, 0.05,
-        help="Oculta las alertas en las que el modelo tuvo más dudas. Con 0 "
+    f1.multiselect("Tipo de ataque", tipos,
+                   **_control_persistente("filtro_tipos", tipos, validos=tipos),
+                   help="Deja solo los tipos que quieres revisar.")
+    f2.slider(
+        "Confianza mínima", 0, 100, step=5, format="%d%%",
+        **_control_persistente("filtro_confianza", 0),
+        help="Oculta las alertas en las que el modelo tuvo más dudas. Con 0% "
              "se muestran todas.",
     )
-    filtro_anomalia = f3.selectbox(
-        "Marca de anomalía", ["Todas", "Solo anómalas", "Solo no anómalas"],
+    f3.selectbox(
+        "Marca de anomalía", list(nucleo.MARCAS_ANOMALIA),
+        **_control_persistente("filtro_anomalia", "Todas", validos=list(nucleo.MARCAS_ANOMALIA)),
         help=f"Filtra según la marca del detector de anomalías (umbral actual: "
              f"{umbral}, se puede ajustar en la pantalla Detección de anomalías).",
     )
 
-    filtradas = alertas[alertas["clase"].isin(tipos_sel) & (alertas["confianza"] >= conf_min)]
-    if filtro_anomalia == "Solo anómalas":
-        filtradas = filtradas[filtradas["anomalo"]]
-    elif filtro_anomalia == "Solo no anómalas":
-        filtradas = filtradas[~filtradas["anomalo"]]
-
-    st.markdown(f"Mostrando **{len(filtradas):,}** alertas con el filtro aplicado.")
-    tabla = filtradas.rename(
-        columns={
-            "fila": "Fila del archivo",
-            "clase": "Tipo de ataque",
-            "confianza": "Confianza",
-            "clase_binaria": "¿Ataque? (modelo binario)",
-            "prob_ataque": "Prob. de ataque",
-            "anomalo": "Anómalo",
-            "score_anomalia": "Score de anomalía",
-        }
-    )
+    filtradas, _, descripcion = _alertas_filtradas(resultado, recursos)
+    st.markdown(f"Mostrando **{formatear(len(filtradas))}** alertas con el filtro aplicado.")
+    tabla = _tabla_alertas(filtradas)
     if len(filtradas) == 0:
         st.info(
             "Ningún flujo cumple con el filtro actual. Prueba aflojando alguno "
@@ -669,8 +784,8 @@ def pantalla_alertas(recursos, estado) -> None:
         )
     else:
         st.dataframe(
-            tabla.style.format({"Confianza": "{:.1%}", "Prob. de ataque": "{:.1%}",
-                                "Score de anomalía": "{:.3f}"}),
+            tabla.style.format({"Confianza": PORCENTAJE, "Prob. de ataque": PORCENTAJE,
+                                "Score de anomalía": TRES_DECIMALES}),
             hide_index=True, width="stretch",
         )
         st.caption(
@@ -684,14 +799,6 @@ def pantalla_alertas(recursos, estado) -> None:
             "quiere decir un comportamiento más raro frente al tráfico normal."
         )
 
-    # El filtro vigente queda disponible para la pantalla Reportes
-    st.session_state["alertas_filtradas"] = tabla
-    st.session_state["descripcion_filtro"] = (
-        f"{len(filtradas):,} alertas (tipos: {len(tipos_sel)} de {len(tipos)}; "
-        f"confianza ≥ {conf_min:.0%}; anomalía: {filtro_anomalia.lower()}; "
-        f"umbral {umbral})"
-    )
-
     # Exportación (respeta el filtro aplicado) — se genera en memoria
     csv = io.StringIO()
     tabla.to_csv(csv, index=False)
@@ -701,12 +808,12 @@ def pantalla_alertas(recursos, estado) -> None:
         file_name="alertas_filtradas.csv",
         mime="text/csv",
         disabled=len(filtradas) == 0,
-        help="Exporta exactamente las alertas que ves, con el filtro aplicado.",
+        help=f"Exporta exactamente las alertas que ves: {descripcion}.",
     )
     if exporto:
         registrar("Exportación de alertas", estado["nombre"], len(resultado),
                   len(filtradas), umbral)
-        st.toast(f"Exportadas {len(filtradas):,} alertas.", icon="📄")
+        st.toast(f"Exportadas {formatear(len(filtradas))} alertas.", icon="📄")
 
 
 # ---------------------------------------------------------------- reportes ---
@@ -743,7 +850,7 @@ def pantalla_reportes(recursos, estado) -> None:
         buf = io.StringIO()
         completo.to_csv(buf, index=False)
         if c1.download_button(
-            f"Resultados completos ({len(completo):,} flujos)",
+            f"Resultados completos ({formatear(len(completo))} flujos)",
             data=buf.getvalue().encode("utf-8-sig"),
             file_name="resultados_completos.csv", mime="text/csv",
             width="stretch",
@@ -755,26 +862,29 @@ def pantalla_reportes(recursos, estado) -> None:
                       umbral)
             st.toast("Resultados completos exportados.", icon="📄")
 
-        filtradas = st.session_state.get("alertas_filtradas")
-        if filtradas is not None and len(filtradas) > 0:
+        # Se recalcula siempre con el archivo activo y el filtro vigente de la
+        # pantalla Alertas (todas las alertas si aún no se ha filtrado)
+        filtradas, todas, descripcion = _alertas_filtradas(resultado, recursos)
+        if len(filtradas) > 0:
             buf2 = io.StringIO()
-            filtradas.to_csv(buf2, index=False)
+            _tabla_alertas(filtradas).to_csv(buf2, index=False)
             if c2.download_button(
                 f"Alertas con el filtro de la pantalla Alertas "
-                f"({len(filtradas):,})",
+                f"({formatear(len(filtradas))})",
                 data=buf2.getvalue().encode("utf-8-sig"),
                 file_name="alertas_filtradas.csv", mime="text/csv",
                 width="stretch",
-                help=st.session_state.get("descripcion_filtro", ""),
+                help=f"Filtro vigente: {descripcion}. Se cambia en la pantalla Alertas.",
             ):
                 registrar("Exportación de alertas", estado["nombre"],
                           len(resultado), len(filtradas), umbral)
-                st.toast(f"Exportadas {len(filtradas):,} alertas.", icon="📄")
+                st.toast(f"Exportadas {formatear(len(filtradas))} alertas.", icon="📄")
+        elif len(todas) == 0:
+            c2.caption("Tu archivo no generó alertas, así que no hay alertas para exportar.")
         else:
             c2.caption(
-                "Para exportar solo una parte de las alertas, aplica primero "
-                "un filtro en la pantalla Alertas y aquí aparecerá la descarga "
-                "con ese filtro."
+                "Con el filtro actual de la pantalla Alertas no queda ninguna "
+                "alerta. Afloja el filtro allí para poder exportarlas."
             )
 
     metricas = recursos["metricas_clase"].copy()
@@ -791,7 +901,8 @@ def pantalla_reportes(recursos, estado) -> None:
 
     st.subheader("Historial de la sesión")
     if st.session_state.historial:
-        st.dataframe(pd.DataFrame(st.session_state.historial),
+        st.dataframe(pd.DataFrame(st.session_state.historial).style.format(
+                         {"Flujos analizados": ENTERO, "Alertas": ENTERO}),
                      hide_index=True, width="stretch")
         st.caption(
             "Cada fila es una acción de esta sesión, con lo que se clasificó "

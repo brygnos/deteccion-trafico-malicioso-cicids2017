@@ -142,6 +142,28 @@ def clasificar(datos: pd.DataFrame, recursos: dict) -> pd.DataFrame:
     )
 
 
+MARCAS_ANOMALIA = ("Todas", "Solo anómalas", "Solo no anómalas")
+
+
+def filtrar_alertas(resultado: pd.DataFrame, anomalo: pd.Series, tipos, confianza_minima: float,
+                    marca: str = "Todas") -> pd.DataFrame:
+    """Las alertas del resultado (flujos con un tipo de ataque asignado) que
+    cumplen el filtro de la pantalla Alertas, con la columna `anomalo`.
+
+    Es la única definición del filtro: la usan la pantalla Alertas y la
+    descarga de Reportes, así que las dos muestran siempre lo mismo para el
+    archivo activo.
+    """
+    alertas = resultado.assign(anomalo=anomalo)
+    alertas = alertas[alertas["clase"] != NOMBRE_NORMAL]
+    alertas = alertas[alertas["clase"].isin(list(tipos)) & (alertas["confianza"] >= confianza_minima)]
+    if marca == "Solo anómalas":
+        alertas = alertas[alertas["anomalo"]]
+    elif marca == "Solo no anómalas":
+        alertas = alertas[~alertas["anomalo"]]
+    return alertas
+
+
 def marcar_anomalias(resultado: pd.DataFrame, recursos: dict, etiqueta_cuantil: str):
     """Marca de anomalía al umbral elegido en el deslizador (R15).
 

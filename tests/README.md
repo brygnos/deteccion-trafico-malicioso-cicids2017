@@ -42,7 +42,7 @@ generar esos datos.
 | R14 | ✅ | Cada flujo trae clase binaria, multiclase y confianza en [0, 1] |
 | R15 | ✅ | El conteo de anómalos crece al pasar de 0,5 % a 1 % y a 2 %, y los cortes salen del detector |
 | R16 | ⏸ manual | Contar clics: resumen 1, métricas 2, explicación de una alerta 3, exportar filtrado 3 |
-| R17 | ✅ | El CSV exportado refleja exactamente el filtro (tipo, confianza, anomalía), y las métricas también se exportan |
+| R17 | ✅ | El CSV exportado refleja exactamente el filtro (tipo, confianza, anomalía), y las métricas también se exportan. Además recorre el tablero sin navegador (AppTest de Streamlit): filtra la demo rica, cambia a la realista y comprueba que la descarga de Reportes corresponde al archivo activo y al filtro y umbral vigentes |
 | R18 | ✅ | Procesar un archivo no crea ningún archivo en disco, y las 48 características son numéricas y sin IPs, IDs ni contenido |
 | R19 | ⏸ no verificable | Integración SIEM: es deseable, y en esta versión la vía es la exportación CSV |
 | R20 | ⏸ manual | Una persona ajena al proyecto completa el recorrido de cargar, revisar y exportar sin ayuda |
