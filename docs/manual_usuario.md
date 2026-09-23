@@ -116,7 +116,7 @@ sección 7.1 y riesgos en la sección 8.3.
 Un navegador de escritorio (Chrome, Firefox o Edge) y la URL
 https://deteccion-trafico-malicioso.streamlit.app/. No hay que instalar nada.
 La primera carga tarda unos segundos, y si el tablero llevaba tiempo sin uso,
-el alojamiento puede tardar un poco más en reanudarlo ([[PENDIENTE: tiempo de reanudación tras inactividad, medido en el tablero desplegado]]).
+el alojamiento puede tardar un poco más en reanudarlo.
 
 | Necesita | No necesita |
 |---|---|
@@ -156,8 +156,8 @@ tablero. Más detalle en
 
 Todas las dependencias directas del tablero son de código abierto con
 licencias permisivas, compatibles con el uso académico: Apache-2.0
-(streamlit), BSD-3-Clause (scikit-learn, pandas y joblib), MIT (shap y
-pytest) y, en numpy, BSD-3-Clause con componentes 0BSD, MIT, Zlib y CC0-1.0.
+(streamlit), BSD-3-Clause (scikit-learn, pandas, joblib y altair), MIT (shap
+y pytest) y, en numpy, BSD-3-Clause con componentes 0BSD, MIT, Zlib y CC0-1.0.
 Están en [requirements.in](../requirements.in), y sus versiones y licencias,
 en [Licencias de las dependencias](../README.md#licencias-de-las-dependencias).
 El tablero publicado se aloja en Streamlit Community Cloud (plan gratuito),
@@ -181,7 +181,9 @@ Fijo". Los textos del tablero, que tutean, se citan tal como aparecen.
 
 ### 3.1 Barra lateral: cargar una demo o un archivo
 
-[[PENDIENTE: captura de la barra lateral con los botones de demo y el recuadro de validación, docs/capturas/01_barra_lateral.png]]
+![Barra lateral con la sección Cargar archivo, los botones Demo rica en ataques y Demo de proporción realista y el archivo activo; a la derecha, el recuadro de validación abierto con el mensaje Archivo válido: 499 de 499 filas listas para clasificar](capturas/01_barra_lateral.png)
+
+*Barra lateral con la demo rica cargada y el recuadro de validación abierto.*
 
 **Qué ve:** la lista "Pantallas", la sección "Cargar archivo" con el cargador
 "CSV de flujos de red" y, debajo, "¿Sin archivo a la mano? Prueba con una
@@ -203,7 +205,9 @@ proporción realista**.
 
 ### 3.2 Panel de resumen
 
-[[PENDIENTE: captura del Panel de resumen con la demo de proporción realista, docs/capturas/02_panel_resumen.png]]
+![Panel de resumen con la demo de proporción realista: 500 flujos cargados, 23 alertas priorizadas y 95,4% de reducción de la carga de revisión, seguido del gráfico Alertas por tipo de ataque](capturas/02_panel_resumen.png)
+
+*Panel de resumen con la demo de proporción realista.*
 
 **Qué ve:** bajo "Cuánto trabajo de revisión te ahorra", los indicadores
 "Flujos cargados", "Alertas priorizadas" y "Reducción de la carga de
@@ -222,7 +226,9 @@ priorizada y se acepta que el modelo pueda dejar pasar algo); el gráfico
 
 ### 3.3 Clasificación
 
-[[PENDIENTE: captura de la pantalla Clasificación, docs/capturas/03_clasificacion.png]]
+![Pantalla Clasificación con la demo rica: gráfico de barras Distribución de clases (Archivo del Usuario) y tabla con los flujos y la confianza media de cada clase](capturas/03_clasificacion.png)
+
+*Clasificación con la demo rica en ataques.*
 
 **Qué ve:** "Distribución de clases (Archivo del Usuario)", con un gráfico y
 una tabla de cuántos flujos de su archivo quedaron en cada clase; un recuadro
@@ -246,7 +252,9 @@ es perfecto); y **Casos en la prueba**, con cuántos ejemplos se midió.
 
 ### 3.4 Detección de anomalías
 
-[[PENDIENTE: captura de la pantalla Detección de anomalías con el control de presupuesto, docs/capturas/04_deteccion_anomalias.png]]
+![Pantalla Detección de anomalías con el control Presupuesto de falsas alarmas en 2%, el indicador Flujos anómalos al umbral del 2% en 36 de 499 y la tabla de flujos ordenada por score de anomalía](capturas/04_deteccion_anomalias.png)
+
+*Detección de anomalías con la demo rica y el presupuesto en 2%.*
 
 **Qué ve:** el control **Presupuesto de falsas alarmas (umbral del
 detector)**, el indicador "Flujos anómalos al umbral del …", la tabla de los
@@ -287,7 +295,9 @@ tramo del viernes llega a 9,6%).
 
 ### 3.5 Interpretabilidad
 
-[[PENDIENTE: captura de la pantalla Interpretabilidad con una alerta seleccionada, docs/capturas/05_interpretabilidad.png]]
+![Pantalla Interpretabilidad con la alerta Fila 6: Web Attack elegida y la tabla de las 8 características con más peso, su valor en el flujo, su peso y su dirección](capturas/05_interpretabilidad.png)
+
+*Interpretabilidad con una alerta de la demo rica seleccionada.*
 
 **Qué ve:** "Resultado Fijo: Qué distingue un ataque del tráfico normal", con
 las 10 variables de las que más depende el modelo, y la "Prueba del puerto de
@@ -309,7 +319,9 @@ tabla general de arriba, al binario.
 
 ### 3.6 Alertas
 
-[[PENDIENTE: captura de la pantalla Alertas con los tres filtros, docs/capturas/06_alertas.png]]
+![Pantalla Alertas con la demo rica: 187 alertas de 499 flujos, los filtros Tipo de ataque, Confianza mínima y Marca de anomalía, y la tabla de la cola de alertas](capturas/06_alertas.png)
+
+*Alertas con la demo rica y sus tres filtros.*
 
 **Qué ve:** la cola de alertas de su archivo (los flujos con un tipo de ataque
 asignado por el multiclase), tres filtros y una tabla.
@@ -334,7 +346,9 @@ del binario; **Anómalo** y **Score de anomalía**, del detector.
 
 ### 3.7 Reportes
 
-[[PENDIENTE: captura de la pantalla Reportes con las descargas y el historial, docs/capturas/07_reportes.png]]
+![Pantalla Reportes con los tres botones de descarga y el Historial de la sesión con dos clasificaciones, la demo rica con umbral de 1% y la demo realista con umbral de 2%](capturas/07_reportes.png)
+
+*Reportes con las descargas y el historial de la sesión.*
 
 **Qué ve:** la sección "Descargas", con tres botones, y el "Historial de la
 sesión". Un recuadro azul recuerda que no hay exportación en PDF y que el
@@ -418,8 +432,10 @@ tráfico. El desempeño está en la sección 7.1 del
 ### 4.4 Analizar un archivo propio (opcional)
 
 El archivo tiene que ser un CSV de CICFlowMeter con los nombres de columna de
-CIC-IDS2017. En local, un lote de 50.000 flujos se clasifica en menos de un
-segundo; [[PENDIENTE: tiempo de clasificación de 50.000 flujos medido en el tablero desplegado]].
+CIC-IDS2017. En el tablero publicado, un lote de 50.000 flujos (15,6 MB) se
+clasifica en menos de 2 segundos después de terminar la subida, y en una
+instalación local tarda unos 2 segundos la primera vez y unos 0,6 segundos las
+siguientes.
 
 1. Cargue su CSV en "CSV de flujos de red" (sección 3.1).
 2. Abra "Validación del archivo '…'" y revise los mensajes:

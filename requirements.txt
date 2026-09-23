@@ -3,6 +3,7 @@
 altair==6.3.0
     # via
     #   -c requirements-analisis.txt
+    #   -r requirements.in
     #   streamlit
 anyio==4.14.1
     # via

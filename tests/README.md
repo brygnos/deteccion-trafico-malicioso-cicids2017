@@ -50,5 +50,6 @@ generar esos datos.
 | R22 | ⏸ manual | Abrir el tablero desplegado en Chrome, Firefox y Edge |
 
 Las manuales aparecen en la salida como `SKIPPED` con la razón completa, para
-que el mismo reporte deje constancia de lo que falta verificar con una persona o
-con el despliegue.
+que el mismo reporte deje constancia de lo que se verifica con una persona o
+con el despliegue. El resultado de esas verificaciones está en la tabla de
+requerimientos diligenciada (`docs/tabla_requerimientos_diligenciada.xlsx`).

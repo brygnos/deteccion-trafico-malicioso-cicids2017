@@ -146,6 +146,7 @@ permisivas, compatibles con el uso académico del proyecto.
 | numpy | 2.5.1 | Cálculo numérico | `BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0` (el paquete incluye componentes con cada una) |
 | joblib | 1.5.3 | Guardar y cargar los modelos | BSD-3-Clause |
 | shap | 0.52.0 | La explicación de cada alerta | MIT |
+| altair | 6.3.0 | Los gráficos de barras del tablero | BSD-3-Clause |
 | pytest | 9.1.1 | Las pruebas de los requerimientos | MIT |
 
 ## Correr el tablero paso a paso
@@ -190,9 +191,9 @@ está en la carpeta donde se instaló).
 > **Plataformas:** el tablero y el análisis se instalan en Windows, en Linux y
 > en Mac con procesador Apple, y en los tres se resuelven exactamente las mismas
 > versiones. En un **Mac con procesador Intel** no se puede instalar ninguno de
-> los dos entornos, porque SHAP depende de `numba` y `numba` ya no publica
-> versiones para esa plataforma con Python 3.13. En ese caso usa la URL pública
-> del tablero.
+> los dos entornos, porque allí SHAP exige `numba<0.63` y `llvmlite<0.46`, y
+> ninguna `numba` de ese rango acepta la `numpy` fijada (2.5.1). En ese caso usa
+> la URL pública del tablero.
 
 **3. Lanzar el tablero** (cada vez que quieras usarlo):
 
